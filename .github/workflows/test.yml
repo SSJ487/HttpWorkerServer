@@ -21,11 +21,28 @@ jobs:
     runs-on: self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
+
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # 1. 리포지토리 클론
       - uses: actions/checkout@v4
 
+      # 2. 실행 중인 서버 확인 및 종료
+      - name: Check and terminate existing server
+        run: |
+          PORT=8080  # 서버가 사용하는 포트 번호
+          PID=$(lsof -t -i:$PORT)  # 포트에 바인딩된 프로세스 ID 확인
+          if [ ! -z "$PID" ]; then
+            echo "Server is already running on port $PORT. Terminating..."
+            kill -9 $PID  # 실행 중인 서버 종료
+          else
+            echo "No server is running on port $PORT."
+          fi
+
+      # 3. 의존성 설치
       - run: bun install
-      - run: bun run index.ts
+
+      # 4. 서버 실행
+      - name: Start server
+        run: bun run index.ts &
 
 

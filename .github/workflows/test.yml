@@ -30,7 +30,7 @@ jobs:
       - name: Check and terminate existing server
         run: |
           PORT=8080  # 서버가 사용하는 포트 번호
-          PID=$(lsof -t -i:$PORT)  # 포트에 바인딩된 프로세스 ID 확인
+          PID=$(lsof -t -i:$PORT || :)  # 포트에 바인딩된 프로세스 ID 확인  실패를 무시
           if [ ! -z "$PID" ]; then
             echo "Server is already running on port $PORT. Terminating..."
             kill -9 $PID  # 실행 중인 서버 종료
@@ -41,8 +41,6 @@ jobs:
       # 3. 의존성 설치
       - run: bun install
 
-      # 4. 서버 실행
-      - name: Start server
-        run: bun run index.ts &
-
-
+      # 4. pm2 실행
+      - name: Start server with PM2
+        run: pm2 reload index.ts

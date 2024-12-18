@@ -41,8 +41,10 @@ jobs:
       # 3. 의존성 설치
       - run: bun install
 
-      # 4. 서버 실행
-      - name: Start server
-        run: bun run index.ts &
+      # 4. pm2 설치
+      - name: Install PM2
+        run: npm install -g pm2
 
-
+      # 5. pm2 실행
+      - name: Start server with PM2
+        run: pm2 start index.ts --interpreter bun
